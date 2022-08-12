@@ -229,7 +229,7 @@ func (e errors) Get(field string) string {
 ```
 :::
 
-:::details 2-8.カスタムフォーム構造体とバリデーションメソッドを定義する
+:::details 2-7.カスタムフォーム構造体とバリデーションメソッドを定義する
 url.Valuesは、フォームからデータを送られてきた時、PostForm関数で取得できる戻り値の型です。
 パースされたフォームの情報が入り、引数にはinput要素のname(id,password)がkeyとして入ります。
 ```go:forms.go
@@ -260,7 +260,7 @@ func (f *Form) Valid() bool {
 ```
 :::
 
-:::details 2-9.作成したwebページを確認する
+:::details 2-8.作成したwebページを確認する
 1. コマンドプロンプトで「go-validation」のディレクトリに移動する。
 ![](/images/go/go-validation/check_1.png)
 2. 「go run main.go」のコマンドを入力する。
