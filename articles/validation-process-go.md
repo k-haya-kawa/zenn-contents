@@ -346,7 +346,8 @@ func (f *Form) Required(fields ...string) {
 :::details 3-3.バリデーションメソッドをmain.goに実装する
 GET処理でrenderTemplateのFormの引数を変えています。
 
-```diff go:main.go
+
+```go:main.go
 // main.go
 package main
 
