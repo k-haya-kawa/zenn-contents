@@ -11,31 +11,29 @@ published: false
 ※今回は、画像（JPEG、PNG）をアップロードする実装方法の一つをご紹介します。
 
 # 2.事前準備
-ファイルアップロードを実装するにあたり、ファイルアップロードが出来るwebページ(表示のみ)を作成しましょう。
+ファイルアップロードを実装するにあたり、ファイルアップロードが出来るwebページを作成しましょう。
 
-:::details 2-1.ワークスペースの構成を下記のように作成する。
-私は、ファイルアップロードの動作確認もしたいので、「C:\」に作成しました。（ファイルの中は空でOK！）
+# 2-1.ワークスペースの構成
+私は、ファイルアップロードの動作確認もしたいので、「C:\」に作成しました。
 
 -----
-> ★ワークスペースの構成
 > go-file-upload
 > ├── file
 > │   └── upload.go
 > ├── main.go
 > └── index.html
 -----
-:::
 
-:::details 2-2.プロジェクトを初期化する。
-goモジュールを使用するため、「go-file-upload」プロジェクトを初期化します。
+# 2-2.プロジェクトの初期化
+goモジュールを使用するために、「go-file-upload」プロジェクトを初期化します。
 1. コマンドプロンプトで「go-file-upload」のディレクトリに移動する。
 ![](/images/go/go-file-upload/check_1.png)
 2. 「go mod init upload」のコマンドを入力し、「go creating nre go mod: module upload」と表示されればOKです。
 ![](/images/go/go-file-upload/check_2.png)
-3. 「go-file-upload」のディレクトリ直下に、「go.mod」ファイルが作成されています。
+3. 「go-file-upload」のディレクトリ直下に、「go.mod」ファイルが作成されます。
 ![](/images/go/go-file-upload/check_3.png)
 
-:::details 2-3.ファイルをアップロードできるwebページを作成する。
+# 2-3.ファイルアップロード用のwebページ作成
 ```go:index.html
 <!-- index.html -->
 <!DOCTYPE html>
@@ -59,9 +57,8 @@ goモジュールを使用するため、「go-file-upload」プロジェクト�
     </body>
 </html>
 ```
-:::
 
-:::details 2-3.アップロード用のエンドポイントとwebページを表示する。
+# 2-4.エンドポイントとwebページの表示
 ```go:main.go
 // main.go
 package main
@@ -95,21 +92,19 @@ func main() {
     setupRoutes()
 }
 ```
-:::
 
-:::details 2-4.作成したwebページを確認する。
+# 2-5.動作確認
 1. コマンドプロンプトで「go-file-upload」のディレクトリに移動する。
 ![](/images/go/go-file-upload/check_1.png)
 2. 「go run main.go」のコマンドを入力する。
 ![](/images/go/go-file-upload/check_4.png)
-3. 「http://localhost:8080」にアクセスします。
+3. 「http://localhost:8080」にアクセスする。
 ![](/images/go/go-file-upload/check_5.png)
-:::
 
 # 3.ファイルアップロード処理
-ファイルアップロード処理の実装をしてみよう。
+ファイルサイズの制限、ファイルの取得から保存、そして、ファイルタイプの制限について、実装してみましょう。
 
-:::details 3-1.「go-file-upload/file」ディレクトリの「upload.go」にファイルサイズ制限を実装する。
+# 3-1.ファイルサイズ制限の実装
 goでは、リクエストボディのサイズを制限するために「http.MaxByteReader()」を使用します。
 また、フォームデータが「multipart/form-data」のため、「ParseMultipartForm()」を使用してフォームデータを取得します。
 ```go:upload.go
@@ -132,14 +127,8 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 ```
-:::
 
-:::details 3-2.アップロードしたファイルを取得して保存する。
-下記の手順で処理を追加する。
-1. フォームのファイルを取得する
-2. 保存用のディレクトリを作成する（存在していなければ、保存用のディレクトリを新規作成）
-3. 保存するファイルを作成する
-4. アップロードしたファイルを保存用のディレクトリにコピーする
+# 3-2.アップロードしたファイルの取得と保存
 ```go:upload.go
 // upload.go
 package file
@@ -202,16 +191,16 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	// ここまで追加
 }
 ```
-:::
 
-:::details 3-3.アップロードしたファイルのタイプを画像（JPEG、PNG）のみに制限する。
+# 3-3.ファイルタイプを「JPEG、PNG」のみに制限
 goで、データ形式を識別するためのMIMEタイプを判定する方法として「DetectContentType()」を使用します。
 
-【DetectContentType()】
+:::details DetectContentType()
 MIMEタイプを決定するために、最初の512バイトのデータを考慮します。
 コンテンツタイプを判別するために、アップロードされたファイルの最初から512バイトを考慮すると、ファイルの位置が512バイト分進みます。
 「io.Copy()」を実行した時、512バイト進んだ位置から読み取りを実行するため、アップロードした画像ファイルは破損します。
 そのため、「file.Seek()」を使用し、ファイルの位置を「0」からに戻します。
+:::
 ```go:upload.go
 // upload.go
 package file
@@ -282,7 +271,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer dst.Close()
 
-	// アップロードしたファイルを保存用のディレクトリにコピーする
+	// 4. アップロードしたファイルを保存用のディレクトリにコピーする
 	_, err = io.Copy(dst, file)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -292,9 +281,8 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "アップロード成功！")
 }
 ```
-:::
 
-:::details 3-4.ファイルアップロード処理をmain.goにimportする。
+# 3-4.ファイルアップロード処理をmain.goにimport
 main.goにfileパッケージをimportします。
 ```go:main.go
 // main.go
@@ -331,25 +319,23 @@ func main() {
 	setupRoutes()
 }
 ```
-:::
 
-:::details 3-4.ファイルアップロードの実装を確認する。
+# 3-5.動作確認
 1. コマンドプロンプトで「go-file-upload」のディレクトリに移動する。
-![](/images/go/go-validation/check_1.png)
+![](/images/go/go-file-upload/check_1.png)
 2. 「go run main.go」のコマンドを入力する。
-![](/images/go/go-validation/check_4.png)
-3. 「http://localhost:8080」にアクセスします。
-![](/images/go/go-validation/check_5.png)
+![](/images/go/go-file-upload/check_4.png)
+3. 「http://localhost:8080」にアクセスする。
+![](/images/go/go-file-upload/check_5.png)
 4. 「ファイル選択」ボタンを押下し、ファイルを選択する。（画面にファイル名が表示されること）
-![](/images/go/go-validation/check_6.png)
-![](/images/go/go-validation/check_7.png)
+![](/images/go/go-file-upload/check_6.png)
+![](/images/go/go-file-upload/check_7.png)
 5. 「アップロード」ボタンを押下する。（画面に「アップロード成功！」が表示されること）
-![](/images/go/go-validation/check_8.png)
-6. ワークスペースに「uploadfiles」が作成されている。
-![](/images/go/go-validation/check_9.png)
-7. 「uploadfiles」にファイルがアップロードされている。
-![](/images/go/go-validation/check_10.png)
-:::
+![](/images/go/go-file-upload/check_8.png)
+6. ワークスペースに「uploadfiles」が作成される。
+![](/images/go/go-file-upload/check_9.png)
+7. 「uploadfiles」にファイルがアップロードされる。
+![](/images/go/go-file-upload/check_10.png)
 
 # 4.まとめ
 今回は、ファイルアップロード処理の実装について、学びました。
