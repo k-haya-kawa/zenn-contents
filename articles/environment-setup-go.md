@@ -4,6 +4,7 @@ emoji: "🐕"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["Zenn"]
 published: false
+publication_name: "toccasystems"
 ---
 :::details 1.GO言語とは
 　Go言語とは、検索エンジンとして馴染み深いGoogleが開発したプログラミング言語のこと。
